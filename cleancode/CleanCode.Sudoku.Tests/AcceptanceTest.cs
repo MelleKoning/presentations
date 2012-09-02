@@ -31,6 +31,7 @@ namespace CleanCode.Sudoku.Tests
 		int[,] solutionGrid = Sudoku.parseProblem(solution);
 		int[,] problemGrid = Sudoku.parseProblem(problem);
 		int[,] actualSolution = Sudoku.solve(problemGrid);
+        Console.Out.WriteLine(Sudoku.prettyPrint(actualSolution));
 		Assert.That(Sudoku.prettyPrint(actualSolution) , Is.EqualTo( Sudoku.prettyPrint(solutionGrid) ));
 	}
     }

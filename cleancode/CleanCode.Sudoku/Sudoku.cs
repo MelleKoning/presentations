@@ -68,48 +68,48 @@ namespace CleanCode.Sudoku
             return null;
         }
 
-        static bool solve(int i, int j, int[,] cells)
+        static bool solve(int row, int col, int[,] cells)
         {
-            if (i == 9)
+            if (row == 9)
             {
-                i = 0;
-                if (++j == 9)
+                row = 0;
+                if (++col == 9)
                     return true;
             }
-            if (cells[i,j] != 0) // skip filled cells
-                return solve(i + 1, j, cells);
+            if (cells[row,col] != 0) // skip filled cells
+                return solve(row + 1, col, cells);
 
-            for (int val = 1; val <= 9; ++val)
+            for (int potentialvalue = 1; potentialvalue <= 9; ++potentialvalue)
             {
-                if (legal(i, j, val, cells))
+                if (legal(row, col, potentialvalue, cells))
                 {
-                    cells[i,j] = val;
-                    if (solve(i + 1, j, cells))
+                    cells[row,col] = potentialvalue;
+                    if (solve(row + 1, col, cells))
                         return true;
                 }
             }
-            cells[i,j] = 0; // reset on backtrack
+            cells[row,col] = 0; // reset on backtrack
             return false;
         }
 
-        static bool legal(int i, int j, int val, int[,] cells)
+        static bool legal(int rowIndex, int colIndex, int potentialvalue, int[,] cells)
         {
-            for (int k = 0; k < 9; ++k)
-                // row
-                if (val == cells[k,j])
+            for (int row = 0; row < 9; ++row)
+                // rowIndex
+                if (potentialvalue == cells[row,colIndex])
                     return false;
 
-            for (int k = 0; k < 9; ++k)
-                // col
-                if (val == cells[i,k])
+            for (int col = 0; col < 9; ++col)
+                // colIndex
+                if (potentialvalue == cells[rowIndex,col])
                     return false;
 
-            int boxRowOffset = (i / 3) * 3;
-            int boxColOffset = (j / 3) * 3;
-            for (int k = 0; k < 3; ++k)
+            int boxRowOffset = (rowIndex / 3) * 3;
+            int boxColOffset = (colIndex / 3) * 3;
+            for (int boxRow = 0; boxRow < 3; ++boxRow)
                 // box
-                for (int m = 0; m < 3; ++m)
-                    if (val == cells[boxRowOffset + k,boxColOffset + m])
+                for (int boxCol = 0; boxCol < 3; ++boxCol)
+                    if (potentialvalue == cells[boxRowOffset + boxRow,boxColOffset + boxCol])
                         return false;
 
             return true; // no violations, so it's legal
@@ -117,10 +117,10 @@ namespace CleanCode.Sudoku
 
         public static int[,] parseProblem(String grid) {
 		int[,] problem = new int[9,9];
-		for (int i = 0; i < 81; i++) {
-			int x = i / 9;
-			int y = i % 9;
-			problem[x, y] = Int32.Parse("" + grid[i]);
+		for (int cell = 0; cell < 81; cell++) {
+			int row = cell / 9;
+			int col = cell % 9;
+			problem[row, col] = Int32.Parse("" + grid[cell]);
 		}
 		return problem;
 	}
