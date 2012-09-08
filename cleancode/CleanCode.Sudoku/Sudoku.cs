@@ -70,11 +70,14 @@ namespace CleanCode.Sudoku
 
         static bool solve(int row, int col, int[,] cells)
         {
-            if (row == 9)
+            if (LastRow(row))
             {
                 row = 0;
-                if (++col == 9)
+                col++;
+                if (LastColumn(col))
+                {
                     return true;
+                }
             }
             if (cells[row,col] != 0) // skip filled cells
                 return solve(row + 1, col, cells);
@@ -92,18 +95,29 @@ namespace CleanCode.Sudoku
             return false;
         }
 
+        private static bool LastColumn(int col)
+        {
+            return col == 9;
+        }
+
+        private static bool LastRow(int row)
+        {
+            return row == 9;
+        }
+
         static bool legal(int rowIndex, int colIndex, int potentialvalue, int[,] cells)
         {
-            for (int row = 0; row < 9; ++row)
-                // rowIndex
-                if (potentialvalue == cells[row,colIndex])
-                    return false;
+            if (!PotentialValueExistsOnRow(potentialvalue, cells, colIndex)) return false;
 
-            for (int col = 0; col < 9; ++col)
-                // colIndex
-                if (potentialvalue == cells[rowIndex,col])
-                    return false;
+            if (!PotentialValueExistsOnColumn(potentialvalue, cells, rowIndex)) return false;
 
+            if (!PotentialValueExistsInBox(potentialvalue, cells, colIndex, rowIndex)) return false;
+
+            return true; // no violations, so it's legal
+        }
+
+        private static bool PotentialValueExistsInBox(int potentialvalue, int[,] cells, int colIndex, int rowIndex)
+        {
             int boxRowOffset = (rowIndex / 3) * 3;
             int boxColOffset = (colIndex / 3) * 3;
             for (int boxRow = 0; boxRow < 3; ++boxRow)
@@ -111,8 +125,25 @@ namespace CleanCode.Sudoku
                 for (int boxCol = 0; boxCol < 3; ++boxCol)
                     if (potentialvalue == cells[boxRowOffset + boxRow,boxColOffset + boxCol])
                         return false;
+            return true;
+        }
 
-            return true; // no violations, so it's legal
+        private static bool PotentialValueExistsOnColumn(int potentialvalue, int[,] cells, int rowIndex)
+        {
+            for (int col = 0; col < 9; ++col)
+                // colIndex
+                if (potentialvalue == cells[rowIndex,col])
+                    return false;
+            return true;
+        }
+
+        private static bool PotentialValueExistsOnRow(int potentialvalue, int[,] cells, int colIndex)
+        {
+            for (int row = 0; row < 9; ++row)
+                // rowIndex
+                if (potentialvalue == cells[row,colIndex])
+                    return false;
+            return true;
         }
 
         public static int[,] parseProblem(String grid) {
